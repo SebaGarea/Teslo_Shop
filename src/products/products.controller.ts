@@ -34,9 +34,12 @@ export class ProductsController {
     return this.productsService.findOne(term);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(+id, updateProductDto);
+  @Patch(':term')
+  update(
+    @Param('term') term: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
+    return this.productsService.update(term, updateProductDto);
   }
 
   @Delete(':id')
