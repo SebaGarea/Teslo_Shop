@@ -44,4 +44,5 @@ export class CreateProductDto {
   @IsString({ each: true })
   @IsOptional()
   tags: string[];
+
 }
