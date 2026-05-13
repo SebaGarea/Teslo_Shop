@@ -79,7 +79,7 @@ GET /products?limit=10&offset=0
 
 ---
 
-## Crear producto - Body
+## Crear / Actualizar producto - Body
 
 ```json
 {
@@ -90,11 +90,14 @@ GET /products?limit=10&offset=0
   "stock": 100,
   "sizes": ["XS", "S", "M", "L", "XL"],
   "gender": "men",
-  "tags": ["shirt", "teslo"]
+  "tags": ["shirt", "teslo"],
+  "images": ["image1.jpg", "image2.jpg"]
 }
 ```
 
 > El `slug` es opcional. Si no se envía, se genera automáticamente a partir del `title` (espacios reemplazados por `_`, sin comillas).
+
+> Al hacer `PATCH`, si se envía `images`, las imágenes anteriores se reemplazan completamente. La operación se ejecuta dentro de una transacción.
 
 ---
 
@@ -111,6 +114,7 @@ GET /products?limit=10&offset=0
 | `sizes` | string[] | Array de talles |
 | `gender` | string | `men`, `women`, `kid`, `unisex` |
 | `tags` | string[] | Default: [] |
+| `images` | string[] | URLs de imágenes del producto |
 
 ---
 
