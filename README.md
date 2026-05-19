@@ -66,7 +66,17 @@ Base URL: `http://localhost:3000`
 | `PATCH` | `/products/:term` | Actualizar por UUID, título o slug |
 | `DELETE` | `/products/:id` | Eliminar por UUID |
 
-### Paginación
+### Seed
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/seed` | Elimina todos los productos e inserta datos de prueba |
+
+> **Advertencia:** El endpoint `/seed` borra toda la tabla de productos antes de insertar. No usar en producción.
+
+---
+
+## Paginación
 
 ```
 GET /products?limit=10&offset=0
@@ -95,13 +105,15 @@ GET /products?limit=10&offset=0
 }
 ```
 
-> El `slug` es opcional. Si no se envía, se genera automáticamente a partir del `title` (espacios reemplazados por `_`, sin comillas).
+> El `slug` es opcional. Si no se envía, se genera automáticamente a partir del `title` (espacios reemplazados por `_`, sin comillas simples).
 
-> Al hacer `PATCH`, si se envía `images`, las imágenes anteriores se reemplazan completamente. La operación se ejecuta dentro de una transacción.
+> Al hacer `PATCH`, si se envían `images`, las imágenes anteriores se reemplazan completamente. La operación se ejecuta dentro de una transacción con `QueryRunner`.
 
 ---
 
-## Entidad Product
+## Entidades
+
+### Product
 
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
@@ -111,10 +123,27 @@ GET /products?limit=10&offset=0
 | `description` | text | Opcional |
 | `slug` | string | Único, auto-generado si no se provee |
 | `stock` | int | Default: 0 |
-| `sizes` | string[] | Array de talles |
+| `sizes` | string[] | Array de talles (`XS`, `S`, `M`, `L`, `XL`, `XXL`) |
 | `gender` | string | `men`, `women`, `kid`, `unisex` |
-| `tags` | string[] | Default: [] |
-| `images` | string[] | URLs de imágenes del producto |
+| `tags` | string[] | Default: `[]` |
+| `images` | ProductImage[] | Relación OneToMany con cascade y eager loading |
+
+### ProductImage
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | number | Auto-incremental |
+| `url` | string | URL de la imagen |
+| `product` | Product | Relación ManyToOne — se elimina en cascada con el producto |
+
+---
+
+## Notas de implementación
+
+- Las imágenes se almacenan en una tabla separada (`product_image`) con relación `ManyToOne` hacia `Product`.
+- La respuesta de `GET /products` y `GET /products/:term` aplana las imágenes a un array de URLs (usando `findOnePlain`).
+- Las actualizaciones de imágenes usan `QueryRunner` para garantizar atomicidad: si algo falla, se hace rollback automático.
+- Los hooks `@BeforeInsert` y `@BeforeUpdate` normalizan el slug automáticamente.
 
 ---
 
