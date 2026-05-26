@@ -3,6 +3,12 @@
 /node_modules
 /build
 
+# Uploaded files (keep folder structure via .gitkeep)
+/static/products/*
+!/static/products/.gitkeep
+/static/uploads/*
+!/static/uploads/.gitkeep
+
 postgres/
 .env
 
