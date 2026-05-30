@@ -10,6 +10,8 @@ API REST de e-commerce construida con **NestJS**, **TypeORM** y **PostgreSQL**.
 - **TypeORM** v0.3
 - **PostgreSQL**
 - **class-validator** / **class-transformer**
+- **@nestjs/serve-static** — sirve archivos estáticos desde `/public`
+- **Multer** — manejo de uploads de archivos
 
 ---
 
@@ -35,6 +37,8 @@ DB_PORT=5432
 DB_NAME=teslo_shop
 DB_USERNAME=postgres
 DB_PASSWORD=tu_password
+PORT=3000
+HOST_API=http://localhost:3000/api
 ```
 
 ---
@@ -54,7 +58,7 @@ npm run start:prod
 
 ## Endpoints
 
-Base URL: `http://localhost:3000`
+Base URL: `http://localhost:3000/api`
 
 ### Products
 
@@ -65,6 +69,18 @@ Base URL: `http://localhost:3000`
 | `GET` | `/products/:term` | Buscar por UUID, título o slug |
 | `PATCH` | `/products/:term` | Actualizar por UUID, título o slug |
 | `DELETE` | `/products/:id` | Eliminar por UUID |
+
+### Files
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `POST` | `/files/product` | Sube una imagen de producto (form-data, campo `file`) |
+| `GET` | `/files/product/:imageName` | Retorna la imagen almacenada por nombre |
+
+- Solo se aceptan imágenes: `jpg`, `jpeg`, `png`, `gif`.
+- El nombre del archivo se reemplaza por un UUID para evitar colisiones.
+- La respuesta del `POST` devuelve la URL completa: `{ "fileName": "http://localhost:3000/api/files/product/<uuid>.ext" }`.
+- Las imágenes se guardan en `./static/products/` dentro del proyecto.
 
 ### Seed
 
