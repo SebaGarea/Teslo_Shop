@@ -12,6 +12,7 @@ API REST de e-commerce construida con **NestJS**, **TypeORM** y **PostgreSQL**.
 - **class-validator** / **class-transformer**
 - **@nestjs/serve-static** — sirve archivos estáticos desde `/public`
 - **Multer** — manejo de uploads de archivos
+- **bcrypt** — hasheo de contraseñas
 
 ---
 
@@ -82,6 +83,34 @@ Base URL: `http://localhost:3000/api`
 - La respuesta del `POST` devuelve la URL completa: `{ "fileName": "http://localhost:3000/api/files/product/<uuid>.ext" }`.
 - Las imágenes se guardan en `./static/products/` dentro del proyecto.
 
+### Auth
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `POST` | `/auth/register` | Registrar un nuevo usuario |
+| `POST` | `/auth/login` | Iniciar sesión |
+| `GET` | `/auth/users` | Listar usuarios |
+
+**Registro - Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "Abc123!@#",
+  "fullName": "John Doe"
+}
+```
+
+**Login - Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "Abc123!@#"
+}
+```
+
+> La contraseña debe ser fuerte (`IsStrongPassword`): mínimo 8 caracteres, mayúsculas, minúsculas, números y símbolos.
+> El campo `password` no se retorna en las respuestas.
+
 ### Seed
 
 | Método | Ruta | Descripción |
@@ -143,6 +172,17 @@ GET /products?limit=10&offset=0
 | `gender` | string | `men`, `women`, `kid`, `unisex` |
 | `tags` | string[] | Default: `[]` |
 | `images` | ProductImage[] | Relación OneToMany con cascade y eager loading |
+
+### User
+
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| `id` | UUID | Generado automáticamente |
+| `email` | string | Único, requerido |
+| `password` | string | Hasheada con bcrypt (no se retorna en responses) |
+| `fullName` | string | Requerido |
+| `isActive` | boolean | Default: `true` |
+| `roles` | string[] | Default: `['user']` |
 
 ### ProductImage
 
